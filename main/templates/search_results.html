@@ -14,15 +14,15 @@
         <div class="card border-0">
             <div class="card-body p-0">
                 <div class="card-title fw-normal align-items-center col">
-                    <a class="text-decoration-none fs-5 me-1" href="{% url 'airport_detail' airport_iri=i.airport_iri.value %}">{{ i.airport_name.value|highlight_query:request.GET.q }}</a>
-                    <span class="badge text-bg-primary">{{ i.airport_iri.value }}</span>
-                    <span class="badge text-bg-secondary">{{ i.airport_iata.value }}</span>
-                    <span class="badge text-bg-secondary">{{ i.airport_localcode.value }}</span>
-                    <span class="badge text-bg-secondary">{{ i.airport_gpscode.value }}</span>
+                    <a class="text-decoration-none fs-5 me-1">
+                        <img src="{% static 'flags/' %}{{ i.iso_country|lower }}.gif" alt="{{ i.iso_country }}" class="me-1" style="width: 20px; height: auto;">
+                        {{ i.name|highlight_query:request.GET.q }}
+                    </a>
+                    <span class="badge text-bg-primary">{{ i.icao_code }}</span>
+                    <span class="badge text-bg-secondary">{{ i.iata_code }}</span>
+                    <span class="badge text-bg-secondary">{{ i.local_code }}</span>
+                    <span class="badge text-bg-secondary">{{ i.gps_code }}</span>
                 </div>
-                <h6 class="card-subtitle text-body-secondary">
-                        {{ i.region_name.value }}, {{ i.country_name.value }}
-                </h6>
             </div>
         </div>
         <hr/>

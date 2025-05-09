@@ -1,11 +1,22 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from django.http import JsonResponse
+from elasticsearch import Elasticsearch
 import environ
 
 # Setup environment variables
 env = environ.Env()
 environ.Env.read_env()
-searh_host = env("SEARCH_HOST")
+search_host = env("SEARCH_HOST")
+
+# Make sure this header matches your server version if you're using ES 8+
+es = Elasticsearch(
+    search_host,
+    headers={
+        "Accept": "application/vnd.elasticsearch+json; compatible-with=8",
+        "Content-Type": "application/vnd.elasticsearch+json; compatible-with=8"
+    }
+)
 
 # Create your views here.
 def index(request):
@@ -19,3 +30,30 @@ def index(request):
         'page_title': "homepage",
     }
     return render(request, "index.html", context)
+
+def search(request):
+    ''' Menampilkan hasil pencarian '''
+    query = request.GET.get("q", "").strip()
+    results = []
+
+    if query:
+        try:
+            response = es.search(
+                index="airports",
+                query={
+                    "multi_match": {
+                        "query": query,
+                        "fields": ["name", "iata_code", "iso_country"]
+                    }
+                }
+            )
+            results = [hit["_source"] for hit in response["hits"]["hits"]]
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    context = {
+            'page_title': "Search results for \"" + request.GET.get("q") + "\"",
+            'search_results': results,
+        }
+    response = render(request, 'search_results.html', context)
+    return response
