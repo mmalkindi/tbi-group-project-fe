@@ -1,13 +1,9 @@
 asgiref
 Django
-thefuzz
 gunicorn
 isodate
 pyparsing
-rdflib
 six
-SPARQLWrapper
-sqlparse
 tzdata
 whitenoise
 django-environ

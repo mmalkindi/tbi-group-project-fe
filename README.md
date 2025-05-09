@@ -12,7 +12,7 @@
     pip install -r requirements.txt
     ```
 
-2. Create a `.env` file in the root directory with the following content:
+2. Create a `.env` file in the `tbing_search` folder with the following content:
 
     ```env
     SEARCH_HOST=http://localhost:9200  ## Change this to your Elasticsearch host
