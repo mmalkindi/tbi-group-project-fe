@@ -14,3 +14,4 @@ django-environ
 elasticsearch
 elasticsearch-dsl
 django-elasticsearch-dsl
+django-countries
