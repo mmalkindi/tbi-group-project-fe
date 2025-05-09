@@ -15,6 +15,7 @@
             <div class="card-body p-0">
                 <div class="card-title fw-normal align-items-center col">
                     <a class="text-decoration-none fs-5 me-1">
+                        <img src="{% static 'flags/' %}{{ i.iso_country|lower }}.gif" alt="{{ i.iso_country }}" class="me-1" style="width: 20px; height: auto;">
                         {{ i.name|highlight_query:request.GET.q }}
                     </a>
                     <span class="badge text-bg-primary">{{ i.icao_code }}</span>
