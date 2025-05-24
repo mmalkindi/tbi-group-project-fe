@@ -86,9 +86,7 @@
         <h6 class="text-secondary fst-italic">You might be looking for:</h6>
         <div class="d-flex flex-wrap gap-2">
             {% for i in similar_results %}
-                <a href="{% url 'airport_detail' airport_iri=i.airport_iri.value %}" class="btn btn-outline-primary btn-sm">
-                    {{ i.airport_name.value }}
-                </a>
+                {{ i.airport_name.value }}
             {% endfor %}
         </div>
     </div>
