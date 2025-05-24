@@ -43,7 +43,8 @@ def search(request):
                 query={
                     "multi_match": {
                         "query": query,
-                        "fields": ["name", "iata_code", "iso_country"]
+                        "fields": ["name", "name_ngrams", "iata_code", "iso_country"],
+                        "fuzziness": "AUTO"
                     }
                 }
             )
@@ -52,8 +53,8 @@ def search(request):
             return JsonResponse({"error": str(e)}, status=500)
 
     context = {
-            'page_title': "Search results for \"" + request.GET.get("q") + "\"",
-            'search_results': results,
-        }
+        'page_title': f"Search results for \"{query}\"",
+        'search_results': results,
+    }
     response = render(request, 'search_results.html', context)
     return response
