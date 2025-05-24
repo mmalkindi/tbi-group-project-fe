@@ -47,7 +47,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'main',
-    'django_countries'
+    'django_countries',
+    'markdownify'
 ]
 
 MIDDLEWARE = [
@@ -141,4 +142,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # CSRF Trusted Origins
-CSRF_TRUSTED_ORIGINS = ['http://tbing-search-tbi.up.railway.app', 'https://127.0.0.1', 'http://localhost']
+CSRF_TRUSTED_ORIGINS = ['http://tbing-search-tbi.up.railway.app', 'https://127.0.0.1', 'http://localhost', 'http://localhost:8000', 'https://tbing-search-tbi.up.railway.app']
+
+# Markdownify settings
+MARKDOWNIFY_STRIP = False
+MARKDOWNIFY_WHITELIST_TAGS = {
+ 'a', 'p', 
+ 'h1', 'h2', 'h3','h4', 'h5', 'h6', 'h7',
+ 'ul', 'li', 'span',
+}

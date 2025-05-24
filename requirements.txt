@@ -11,3 +11,4 @@ elasticsearch
 elasticsearch-dsl
 django-elasticsearch-dsl
 django-countries
+django-markdownify
