@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load highlight %} 
-
+{% load markdownify %}
 {% block content %} 
 
 {% include 'search_bar.html' %}
@@ -26,51 +26,73 @@
     {% endif %}
 </div>
 
-<div class="mb-2 px-3">
-    <div class="search-results d-grid gap-1">
+<div class="container my-4">
+    <!-- AI Summary Section -->
+    {% if summary %}
+    <div class="card mb-4 border-primary">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">AI Summary</h5>
+        </div>
+        <div class="card-body">
+            {{ summary|safe|markdownify|safe  }}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Search Results Section -->
+    <div class="search-results">
     {% if search_results %}
-        <span class="fs-6 text-center text-secondary">Showing {{ search_results|length }} results for <b>{{ request.GET.q }}</b></span>
+        <h6 class="text-center text-secondary mb-3">Showing {{ search_results|length }} results for <strong>{{ request.GET.q }}</strong></h6>
+        
+        <div class="list-group">
         {% for i in search_results %}
-        <div class="card border-0">
-            <div class="card-body p-0">
-                <div class="card-title fw-normal align-items-center col">
-                    <a class="text-decoration-none fs-5 me-1">
-                        <img src="{% static 'flags/' %}{{ i.iso_country|lower }}.gif" alt="{{ i.iso_country }}" class="me-1" style="width: 20px; height: auto;">
-                        {{ i.name|highlight_query:request.GET.q }}
-                    </a>
-                    <span class="badge text-bg-primary">{{ i.icao_code }}</span>
-                    <span class="badge text-bg-secondary">{{ i.iata_code }}</span>
-                    <span class="badge text-bg-secondary">{{ i.local_code }}</span>
-                    <span class="badge text-bg-secondary">{{ i.gps_code }}</span>
+            <div class="list-group-item list-group-item-action border-0 mb-2 shadow-sm">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-1">
+                            <img src="{% static 'flags/' %}{{ i.iso_country|lower }}.gif" alt="{{ i.iso_country }}" class="me-2" style="width: 20px; height: auto;">
+                            {{ i.name|highlight_query:request.GET.q }}
+                        </h5>
+                        <p class="mb-1 text-secondary">
+                            {% if i.iata_code %}IATA: <span class="badge bg-primary">{{ i.iata_code }}</span>{% endif %}
+                            {% if i.icao_code %}ICAO: <span class="badge bg-secondary">{{ i.icao_code }}</span>{% endif %}
+                            {% if i.local_code %}LOCAL: <span class="badge bg-secondary">{{ i.local_code }}</span>{% endif %}
+                            {% if i.gps_code %}GPS: <span class="badge bg-secondary">{{ i.gps_code }}</span>{% endif %}
+                        </p>
+                        <small>{{ i.iso_country }}</small>
+                    </div>
                 </div>
             </div>
-        </div>
-        <hr/>
         {% endfor %}
+        </div>
+        
         {% if search_results|length >= 50 %}
-        <p class="fst-italic text-secondary">
-        <span>
-            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-info-circle mb-1 me-1" viewBox="0 0 16 16">
-                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
-                <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
-                </svg>
-        </span>Search limited to 50 results. Please try searching with another keyword</p>
+        <div class="alert alert-info mt-3" role="alert">
+            <i class="bi bi-info-circle me-2"></i>
+            Search limited to 50 results. Please try searching with more specific keywords.
+        </div>
         {% endif %}
     {% else %}
-        <span class="fs-6 mb-2">No airport found with the keyword <b>{{ request.GET.q }}</b></span>
+        <div class="alert alert-warning" role="alert">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            No airports found matching "<strong>{{ request.GET.q }}</strong>"
+        </div>
     {% endif %}
     </div>
     
-    <div class="search-suggestions">
-        {% if similar_results %}
-            <div class='fs-6'>
-                <span class='fs-6 fst-italic text-secondary'>You might be looking for: </span>
-                {% for i in similar_results %}
-                    <a href="{% url 'airport_detail' airport_iri=i.airport_iri.value %}" class="text-decoration-none me-2 fw-bold">{{ i.airport_name.value }}</a>
-                {% endfor %}
-              </div>
-        {% endif %}
+    <!-- Similar Results Suggestions -->
+    {% if similar_results %}
+    <div class="mt-4">
+        <h6 class="text-secondary fst-italic">You might be looking for:</h6>
+        <div class="d-flex flex-wrap gap-2">
+            {% for i in similar_results %}
+                <a href="{% url 'airport_detail' airport_iri=i.airport_iri.value %}" class="btn btn-outline-primary btn-sm">
+                    {{ i.airport_name.value }}
+                </a>
+            {% endfor %}
+        </div>
     </div>
+    {% endif %}
 </div>
 
 {% endblock content %}
