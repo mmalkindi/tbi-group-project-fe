@@ -5,4 +5,5 @@ from main.views import *
 urlpatterns = [
     path('', index, name='index'),
     path("search/", search, name="search"),
+    path("rag/", rag, name="rag"),
 ]
