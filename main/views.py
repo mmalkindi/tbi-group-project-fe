@@ -18,18 +18,33 @@ es = Elasticsearch(
         "Content-Type": "application/vnd.elasticsearch+json; compatible-with=8"
     }
 )
+# Helper function to save recent searches in session
+def save_recent_search(request, query, max_items=5):
+    recent_searches = request.session.get("recent_searches", [])
+    if query:
+        if query not in recent_searches:
+            recent_searches.insert(0, query)
+            recent_searches = recent_searches[:max_items]
+            request.session["recent_searches"] = recent_searches
+        else:
+            recent_searches.remove(query)
+            recent_searches.insert(0, query)
+            request.session["recent_searches"] = recent_searches
+    return recent_searches
 
 # Create your views here.
 @csrf_exempt
 def index(request):
     ''' Menampilkan halaman utama '''
     query = request.GET.get("q")
+    recent_searches = request.session.get("recent_searches", [])
 
     if query != None:
         return redirect(reverse("search") + "?q=" + query)
 
     context = {
         'page_title': "homepage",
+        'recent_searches': recent_searches
     }
     return render(request, "index.html", context)
 
@@ -37,10 +52,12 @@ def index(request):
 def search(request):
     ''' Menampilkan hasil pencarian '''
     query = request.GET.get("q", "").strip()
+    recent_searches = []
     results = []
     summary = ""  # Initialize summary here to avoid the error
     
     if query:
+        recent_searches = save_recent_search(request, query)
         try:
             response = es.search(
                 index="airports",
@@ -79,7 +96,8 @@ Include key details from the search results and any relevant insights.
 
     context = {
         'page_title': f"Search results for \"{query}\"",
-        'search_results': results, 
+        'search_results': results,
+        'recent_searches': recent_searches,
         'summary': summary,
     }
     response = render(request, 'search_results.html', context)
